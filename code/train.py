@@ -18,6 +18,47 @@ from models.modelM3 import ModelM3
 from models.modelM5 import ModelM5
 from models.modelM7 import ModelM7
 
+def calculate_metrics(predictions, targets, num_classes=10):
+    """
+    Calcula Precision, Recall y F1-score macro promedio
+    """
+    # Convertir a numpy arrays si no lo son
+    predictions = predictions.flatten()
+    targets = targets.flatten()
+    
+    # Inicializar contadores
+    precision_sum = 0
+    recall_sum = 0
+    f1_sum = 0
+    valid_classes = 0
+    
+    for class_id in range(num_classes):
+        # True Positives, False Positives, False Negatives
+        tp = np.sum((predictions == class_id) & (targets == class_id))
+        fp = np.sum((predictions == class_id) & (targets != class_id))
+        fn = np.sum((predictions != class_id) & (targets == class_id))
+        
+        # Calcular precision y recall para esta clase
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+        
+        # Calcular F1-score para esta clase
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+        
+        # Agregar a la suma (solo si hay samples de esta clase)
+        if np.sum(targets == class_id) > 0:
+            precision_sum += precision
+            recall_sum += recall
+            f1_sum += f1
+            valid_classes += 1
+    
+    # Calcular promedios macro
+    avg_precision = precision_sum / valid_classes if valid_classes > 0 else 0
+    avg_recall = recall_sum / valid_classes if valid_classes > 0 else 0
+    avg_f1 = f1_sum / valid_classes if valid_classes > 0 else 0
+    
+    return avg_precision, avg_recall, avg_f1
+
 def run(p_seed=0, p_epochs=150, p_kernel_size=5, p_logdir="temp"):
     # random number generator seed ------------------------------------------------#
     SEED = p_seed
@@ -75,6 +116,8 @@ def run(p_seed=0, p_epochs=150, p_kernel_size=5, p_logdir="temp"):
 
     # delete result file ----------------------------------------------------------#
     f = open(OUTPUT_FILE, 'w')
+    # Write header
+    f.write("Epoch   Train_Loss   Train_Acc   Test_Loss   Test_Acc   Best_Test_Acc   Precision   Recall   F1_Score\n")
     f.close()
 
     # global variables ------------------------------------------------------------#
@@ -138,11 +181,19 @@ def run(p_seed=0, p_epochs=150, p_kernel_size=5, p_logdir="temp"):
         test_loss /= len(test_loader.dataset)
         test_accuracy = 100 * correct / len(test_loader.dataset)
         best_test_accuracy = 100 * max_correct / len(test_loader.dataset)
-        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%) (best: {:.2f}%)\n'.format(
+        
+        # Calcular métricas adicionales
+        precision, recall, f1_score = calculate_metrics(total_pred, total_target)
+        
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%) (best: {:.2f}%)'.format(
             test_loss, correct, len(test_loader.dataset), test_accuracy, best_test_accuracy))
+        print('Precision: {:.4f}, Recall: {:.4f}, F1-Score: {:.4f}\n'.format(
+            precision, recall, f1_score))
 
         f = open(OUTPUT_FILE, 'a')
-        f.write(" %3d %12.6f %9.3f %12.6f %9.3f %9.3f\n"%(epoch, train_loss, train_accuracy, test_loss, test_accuracy, best_test_accuracy))
+        f.write(" %3d %12.6f %9.3f %12.6f %9.3f %9.3f %9.4f %9.4f %9.4f\n"%(
+            epoch, train_loss, train_accuracy, test_loss, test_accuracy, 
+            best_test_accuracy, precision, recall, f1_score))
         f.close()
 
         #--------------------------------------------------------------------------#
