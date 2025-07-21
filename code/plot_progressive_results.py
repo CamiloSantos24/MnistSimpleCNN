@@ -79,13 +79,8 @@ def plot_comparison_graphs():
         ax1.grid(True, alpha=0.3)
         ax1.set_xlim(0, 105)
         
-        # Configurar ticks del eje y
-        min_acc = min(accuracies_aug)
-        max_acc = max(accuracies_aug)
-        y_range = max_acc - min_acc
-        y_min = max(min_acc - y_range * 0.1, 98.0)  # Mínimo 98%
-        y_max = min(max_acc + y_range * 0.1, 100.0)  # Máximo 100%
-        ax1.set_ylim(y_min, y_max)
+        # Configurar ticks del eje y (0 a 100)
+        ax1.set_ylim(0, 105)
         
         # Añadir valores en puntos clave
         for i, (x, y) in enumerate(zip(percentages_aug, accuracies_aug)):
@@ -117,13 +112,8 @@ def plot_comparison_graphs():
         ax2.grid(True, alpha=0.3)
         ax2.set_xlim(0, 105)
         
-        # Configurar ticks del eje y
-        min_acc = min(accuracies_no_aug)
-        max_acc = max(accuracies_no_aug)
-        y_range = max_acc - min_acc
-        y_min = max(min_acc - y_range * 0.1, 98.0)  # Mínimo 98%
-        y_max = min(max_acc + y_range * 0.1, 100.0)  # Máximo 100%
-        ax2.set_ylim(y_min, y_max)
+        # Configurar ticks del eje y (0 a 100)
+        ax2.set_ylim(0, 105)
         
         # Añadir valores en puntos clave
         for i, (x, y) in enumerate(zip(percentages_no_aug, accuracies_no_aug)):
@@ -211,14 +201,8 @@ def plot_combined_comparison():
     plt.grid(True, alpha=0.3)
     plt.xlim(0, 105)
     
-    # Configurar rango del eje y
-    all_accuracies = accuracies_aug + accuracies_no_aug
-    min_acc = min(all_accuracies)
-    max_acc = max(all_accuracies)
-    y_range = max_acc - min_acc
-    y_min = max(min_acc - y_range * 0.1, 98.0)
-    y_max = min(max_acc + y_range * 0.1, 100.0)
-    plt.ylim(y_min, y_max)
+    # Configurar rango del eje y (0 a 100)
+    plt.ylim(0, 105)
     
     # Ajustar layout
     plt.tight_layout()
