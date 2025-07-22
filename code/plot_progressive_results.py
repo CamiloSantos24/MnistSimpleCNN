@@ -79,6 +79,9 @@ def plot_comparison_graphs():
         ax1.grid(True, alpha=0.3)
         ax1.set_xlim(0, 105)
         
+        # Configurar ticks del eje x con resolución de 5
+        ax1.set_xticks(range(0, 101, 5))
+        
         # Configurar ticks del eje y (0 a 100)
         ax1.set_ylim(0, 105)
         
@@ -111,6 +114,9 @@ def plot_comparison_graphs():
         ax2.set_ylabel('Mejor Accuracy (%)', fontsize=12)
         ax2.grid(True, alpha=0.3)
         ax2.set_xlim(0, 105)
+        
+        # Configurar ticks del eje x con resolución de 5
+        ax2.set_xticks(range(0, 101, 5))
         
         # Configurar ticks del eje y (0 a 100)
         ax2.set_ylim(0, 105)
@@ -200,6 +206,9 @@ def plot_combined_comparison():
     plt.legend(fontsize=12, loc='lower right')
     plt.grid(True, alpha=0.3)
     plt.xlim(0, 105)
+    
+    # Configurar ticks del eje x con resolución de 5
+    plt.xticks(range(0, 106, 5))
     
     # Configurar rango del eje y (0 a 100)
     plt.ylim(0, 105)
